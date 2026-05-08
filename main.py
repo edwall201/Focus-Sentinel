@@ -4,7 +4,7 @@ os.environ["TORCH_CPP_LOG_LEVEL"] = "ERROR"
 
 import cv2
 from ultralytics import YOLO
-import time
+import time 
 
 def run_sentinel():
     # Yolo nano is suitable for raspberry pi
@@ -13,9 +13,14 @@ def run_sentinel():
     # open camera
     cap = cv2.VideoCapture(0)
     
+    # Lower camera resolution to improve FPS and reduce CPU load
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
     # Logic variables
+    session_start = time.time()
     distraction_start = None
     total_distraction = 0
     is_distracted = False
@@ -26,6 +31,9 @@ def run_sentinel():
         if not ret:
             break
 
+        # 左右翻轉鏡頭畫面 (水平鏡像效果)
+        frame = cv2.flip(frame, 1)
+
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(50, 50))
         for (x, y, w, h) in faces:
@@ -33,7 +41,8 @@ def run_sentinel():
             cv2.putText(frame, "USER", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
         # using existing cell phone detection
-        results = model(frame, classes=[67], verbose=False, conf=0.5)
+        # Set imgsz to 320 to run inference significantly faster on CPU
+        results = model(frame, classes=[67], verbose=False, conf=0.5, imgsz=320)
         phone_detect = False
         
         # Check detected objects
@@ -82,7 +91,7 @@ def run_sentinel():
         total_distraction += time.time() - distraction_start
         
     print(f"\nSession Summary:")
-    print(f"Total focus time: {int(time.time() - distraction_start - total_distraction)} seconds.")
+    print(f"Total focus time: {int(time.time() - session_start - total_distraction)} seconds.")
     print(f"Total time spent on phone: {int(total_distraction)} seconds.")
 
 if __name__ == "__main__":
