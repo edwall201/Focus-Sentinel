@@ -41,7 +41,6 @@ def run_sentinel():
             cv2.putText(frame, "USER", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
         # using existing cell phone detection
-        # Set imgsz to 320 to run inference significantly faster on CPU
         results = model(frame, classes=[67], verbose=False, conf=0.5, imgsz=320)
         phone_detect = False
         
