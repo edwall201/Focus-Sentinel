@@ -12,8 +12,6 @@ def run_sentinel():
 
     # open camera
     cap = cv2.VideoCapture(0)
-    
-    # Lower camera resolution to improve FPS and reduce CPU load
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     
@@ -31,7 +29,6 @@ def run_sentinel():
         if not ret:
             break
 
-        # 左右翻轉鏡頭畫面 (水平鏡像效果)
         frame = cv2.flip(frame, 1)
 
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
