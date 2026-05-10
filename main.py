@@ -5,6 +5,7 @@ os.environ["TORCH_CPP_LOG_LEVEL"] = "ERROR"
 import cv2
 from ultralytics import YOLO
 import time 
+import ui_demo
 
 def run_sentinel():
     # Yolo nano is suitable for raspberry pi
@@ -64,6 +65,16 @@ def run_sentinel():
                 duration = time.time() - distraction_start
                 total_distraction += duration
                 is_distracted = False
+                
+        if is_distracted:
+            current_distraction_time = total_distraction + (time.time() - distraction_start)
+        else:
+            current_distraction_time = total_distraction
+            
+        current_focus_time = (time.time() - session_start) - current_distraction_time
+        ui_status = "PHONE!" if phone_detect else "FOCUSING"
+        
+        ui_demo.draw_ui(int(current_focus_time), int(current_distraction_time), status=ui_status)
 
         # Visual 
         color = (0, 0, 255) if phone_detect else (0, 255, 0)

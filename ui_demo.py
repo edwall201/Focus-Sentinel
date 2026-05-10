@@ -11,17 +11,19 @@ def draw_ui(focus_time, distraction_time, status = "FOCUSING"):
         draw.line((0, 20, 128, 20), fill="white")
         draw.text((10, 30), f"Focus: {focus_time}s", fill="white")
         draw.text((10, 45), f"Distractions: {distraction_time}s", fill="white")
-try:
-    start_time = time.time()
-    count = 0
 
-    while True:
-        elapsed = int(time.time() - start_time)
-        draw_ui(elapsed, count, status="WORKING" if elapsed % 10 < 7 else "PHONE!")
-        
-        if elapsed % 10 == 7:
-            count += 1
+if __name__ == "__main__":
+    try:
+        start_time = time.time()
+        count = 0
+
+        while True:
+            elapsed = int(time.time() - start_time)
+            draw_ui(elapsed, count, status="WORKING" if elapsed % 10 < 7 else "PHONE!")
             
-        time.sleep(1)
-except KeyboardInterrupt:
-    pass
+            if elapsed % 10 == 7:
+                count += 1
+                
+            time.sleep(1)
+    except KeyboardInterrupt:
+        pass
